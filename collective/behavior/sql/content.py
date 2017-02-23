@@ -735,7 +735,7 @@ class SQLBaseConnectionUtility(object):
             self.name = unicode(self.sql_url+'+'+self.sql_table)
         a_base.prepare(a_base.metadata.bind, name_for_collection_relationship=unique_collection)
         self.a_base = a_base
-        self._scoped_session = scoped_session(sessionmaker(bind=self.a_base.metadata.bind, extension=ZopeTransactionExtension(keep_session=True), autocommit=True))
+        self._scoped_session = scoped_session(sessionmaker(bind=self.a_base.metadata.bind, extension=ZopeTransactionExtension(keep_session=True), autocommit=True, expire_on_commit=False))
 
     def __init__(self, fti=None):
         if not fti or not fti.sql_connection:
