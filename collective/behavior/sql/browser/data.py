@@ -140,7 +140,6 @@ class SQLItemListingForm(crud.CrudForm):
                 req += ' WHERE '+self.sqlfti.sql_WHERE
             s = text(req)
             res = self.connection.conn.execute(s).fetchall()
-            LOG.info(res)
             for sql_id, item_id in res:
                 try:
                     sql_id = str(unidecode(str(sql_id)))
@@ -148,7 +147,12 @@ class SQLItemListingForm(crud.CrudForm):
                     sql_id = str(unidecode(sql_id))
                 if not item_id:
                     item_id = sql_id
-                items.append((sql_id, self.factory_utility(sql_id=sql_id, id=item_id).__of__(site)))
+                results = self.catalog.searchResults(portal_type=self.fti_id, sql_id=sql_id, sql_virtual=False)
+                if results:
+                    item = results[0].getObject()
+                else:
+                    item = self.factory_utility(sql_id=sql_id, id=item_id).__of__(site)
+                items.append((sql_id, item))
         else:
             req = 'SELECT '+self.sql_id_column+' FROM '+self.sqlfti.sql_table
             if self.sqlfti.sql_WHERE:

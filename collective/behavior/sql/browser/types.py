@@ -193,7 +193,7 @@ class SQLTypeSettingsAdapter(TypeSettingsAdapter):
                 connection = getUtility(ISQLConnectionsUtility, name=self.context.id)
             except:
                 connection = updateConnectionsForFti(self.context)
-        if not getattr(connection, 'name', None):
+        if not getattr(connection, 'connection_name', None):
             return None
         return connection
 

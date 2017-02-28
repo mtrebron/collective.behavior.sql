@@ -1,3 +1,7 @@
+- v 0.9.9 bug fix in dx sql type
+
+- v 0.9.8 /@@data first search in catalog before creating objects on the fly
+
 - v 0.9.7 added expire_on_commit=False to session maker to avoid SQLAlchemy DetachedInstanceError
 
 - v 0.9.6 Catch sql connection errors on init so that the site doesn't break
