@@ -48,9 +48,19 @@ class SQLFieldEditForm(FieldEditForm):
                 datas[a] = b
             if not data['IFieldSQLBehavior.sql_column'] and datas.get(fieldname):
                 del datas[fieldname]
+                if fieldname in ['effective', 'expiration']:
+                    if datas.get(fieldname+'_date'):
+                        del datas[fieldname+'_date']
             else:
                 datas[fieldname] = data['IFieldSQLBehavior.sql_column']
-            self.sqlfti.sql_fields_columns = [a+':'+b for a,b in datas.items()]
+            sql_fields_columns = []
+            for a,b in datas.items():
+                if not b:
+                    continue
+                sql_fields_columns.append(a+':'+b)
+                if a in ['effective', 'expiration']:
+                    sql_fields_columns.append(a+'_date'+':'+b)
+            self.sqlfti.sql_fields_columns = sql_fields_columns
             changes[IFieldSQLBehavior] = 'sql_column'
         return changes
 

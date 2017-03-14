@@ -1,3 +1,5 @@
+- v 0.9.10 fix support of effective date and expiration date (field declared as "effective" but it looks for "effective_date"
+
 - v 0.9.9 bug fix in dx sql type
 
 - v 0.9.8 /@@data first search in catalog before creating objects on the fly
