@@ -11,6 +11,9 @@ def getSQLID(obj):
     
 @indexer(ISQLDexterityItem)
 def getSQLTable(obj):
-    sql_type = ISQLTypeSettings(queryUtility(IDexterityFTI, name=obj.portal_type))
-    return getattr(sql_type, 'sql_table', '')
+    utility = queryUtility(IDexterityFTI, name=obj.portal_type)
+    if utility:
+        sql_type = ISQLTypeSettings(utility)
+        return getattr(sql_type, 'sql_table', '')
+    return ''
 

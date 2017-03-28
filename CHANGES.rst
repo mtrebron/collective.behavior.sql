@@ -1,3 +1,5 @@
+- v 0.9.11 fix instance renaming by catching specific catalog mothods
+
 - v 0.9.10 fix support of effective date and expiration date (field declared as "effective" but it looks for "effective_date"
 
 - v 0.9.9 bug fix in dx sql type

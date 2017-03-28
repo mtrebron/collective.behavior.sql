@@ -62,6 +62,7 @@ from zope.schema.fieldproperty import FieldProperty
 from zope.schema.interfaces import ITuple, IList, IDatetime
 LOG = logging.getLogger(__name__)
 
+SpecificAttrs = ['unindexObject', 'opaqueValues', 'getPhysicalPath', 'getId', 'indexObject', 'getPortalTypeName', 'portal_type']
 
 class SQLRelationValue(object):
     implements(ITemporaryRelationValue, IKeyReference)
@@ -281,9 +282,12 @@ class SQLDexterityItem(Item):
                     if not isinstance(sql_item, list):
                         value = getattr(sql_item, sql_column, None)
         return value
-    
+
+    def opaqueValues(self):
+        return []
+
     def __getattr__(self, name):
-        if name.startswith('_') or name.startswith('portal_') or name.startswith('@@'):
+        if name.startswith('_') or name.startswith('portal_') or name.startswith('@@') or name in SpecificAttrs:
             return super(SQLDexterityItem, self).__getattr__(name)
         value = super(SQLDexterityItem, self).__getattr__(name)
         if isinstance(value, unicode) and '/' in str(value):
@@ -293,7 +297,7 @@ class SQLDexterityItem(Item):
         return value
     
     def __getattribute__(self, name):
-        if name.startswith('_') or name.startswith('portal_') or name.startswith('@@') or name == 'sql_id':
+        if name.startswith('_') or name.startswith('portal_') or name.startswith('@@') or name == 'sql_id' or name in SpecificAttrs:
             return super(SQLDexterityItem, self).__getattribute__(name)
         connection = queryUtility(ISQLConnectionsUtility, name=self.portal_type, default=None)
         if connection == None and self.portal_type:
