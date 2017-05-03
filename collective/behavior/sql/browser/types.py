@@ -8,6 +8,7 @@ from Products.CMFCore.interfaces import ISiteRoot
 from zope.component.hooks import getSite
 from z3c.relationfield.interfaces import IRelationValue
 from zope.annotation.interfaces import IAnnotations
+from plone.app.uuid.utils import uuidToObject
 from zope.component import getUtility, ComponentLookupError, queryUtility, queryMultiAdapter
 from plone.dexterity.interfaces import IDexterityFTI
 from ZPublisher.BaseRequest import DefaultPublishTraverse
@@ -24,7 +25,7 @@ from collective.behavior.sql.content import registerConnectionUtilityForFTI, reg
 from zope.publisher.interfaces.browser import IBrowserPublisher, IBrowserView
 from Products.Five.utilities import marker
 from collective.behavior.sql.browser.edit import SQLEditView
-from collective.behavior.sql.content import updateConnectionsForFti
+from collective.behavior.sql.content import updateConnectionsForFti, registerPublisherForFTI
 from sqlalchemy import create_engine, MetaData, Table, text
 LOG = logging.getLogger(__name__)
 
@@ -161,7 +162,7 @@ class SQLTypeSettingsAdapter(TypeSettingsAdapter):
                         'id': 'sql_folder_id',
                         'type': 'string',
                         'mode': 'w',
-                        'label': "Folder Path",
+                        'label': "SQL Items Folder",
                         'description': "The path of the folder that contains the sql items. If left blank, 'data-' plus the id of the type."
                     },
                     {
@@ -292,28 +293,39 @@ class SQLTypeSettingsAdapter(TypeSettingsAdapter):
 
     def _get_sql_folder_id(self):
         value = getattr(self.context, 'sql_folder_id', None)
-        if hasattr(value, 'startswith') and value.startswith('/'):
-            value = RelationValue(value)
+        if value:
+            if hasattr(value, 'startswith') and value.startswith('/'):
+                site = getSite()
+                obj = site.restrictedTraverse(value)
+                return obj.UID()
+            else:
+                return value
         return value
 
     def _set_sql_folder_id(self, value):
         old_value = self.context.sql_folder_id
         if value:
-            self.context.sql_folder_id = value.to_path
+            self.context.sql_folder_id = value
         else:
             self.context.sql_folder_id = None
         if value != old_value:
             site = getSite()
             old_object = None
             if old_value:
-                try:
-                    old_object = site.restrictedTraverse(old_value)
-                except:
-                    pass
+                if hasattr(old_value, 'startswith') and old_value.startswith('/'):
+                    try:
+                        old_object = site.restrictedTraverse(old_value)
+                    except:
+                        pass
+                else:
+                    try:
+                        old_object = uuidToObject(old_value)
+                    except:
+                        pass
             new_object = None
             if value:
                 try:
-                    new_object = value.to_object
+                    new_object = uuidToObject(value)
                 except:
                     pass
             if old_object:
@@ -329,6 +341,8 @@ class SQLTypeSettingsAdapter(TypeSettingsAdapter):
             if new_object:
                 marker.mark(new_object, ISQLTraverser)
                 IAnnotations(new_object)['collective.behavior.sql.sql_type'] = self.context.id
+            else:
+                registerPublisherForFTI(self)
 
     sql_folder_id = property(
         _get_sql_folder_id, _set_sql_folder_id)

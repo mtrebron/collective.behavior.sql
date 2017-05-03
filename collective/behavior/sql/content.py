@@ -18,6 +18,7 @@ from zope.component.hooks import getSite
 from plone.app.textfield.interfaces import IRichText
 from plone.app.textfield.value import RichTextValue
 from plone.uuid.interfaces import IUUID, ATTRIBUTE_NAME
+from plone.app.uuid.utils import uuidToObject
 from plone.namedfile.interfaces import INamedBlobImage
 from plone.dexterity.content import Item, _marker, _zone
 from z3c.relationfield.interfaces import IRelationValue
@@ -868,36 +869,42 @@ def registerPublisherForFTI(fti):
     # This registers a publisher that will allow to traverse to each sql item
     if not getattr(fti, 'sql_table', None):
         return
-    name = getattr(fti, 'sql_folder_id', fti.id)
+    sql_folder_id = getattr(fti, 'sql_folder_id', fti.id)
     has_folder = False
-    if name and IRelationValue.providedBy(name):
-        obj = name.to_object
-        if obj:
-            has_folder = True
-            name = obj.getId()
-        else:
-            name = fti.context.getId()
-    elif name and name.startswith('/'):
-        portal = getToolByName(getSite(), "portal_url").getPortalObject()
-        try:
-            folder = portal.restrictedTraverse(name)
-            has_folder = True
-        except:
-            pass
-    elif not name:
+    if sql_folder_id:
+		if IRelationValue.providedBy(sql_folder_id):
+			obj = sql_folder_id.to_object
+			if obj:
+				has_folder = True
+				name = obj.getId()
+			else:
+				name = fti.context.getId()
+		elif sql_folder_id.startswith('/'):
+			portal = getToolByName(getSite(), "portal_url").getPortalObject()
+			try:
+				folder = portal.restrictedTraverse(name)
+				has_folder = True
+			except:
+				pass
+		else:
+			try:
+				folder = uuidToObject(sql_folder_id)
+				has_folder = True
+			except:
+				pass
+    else:
         name = fti.context.getId()
     if not has_folder:
         view = queryMultiAdapter((None, ICollectiveBehaviorSQLLayer), IBrowserView, name='data-'+name, default=None)
-        if view != None:
-            return view
-        publisher = SQLItemPublisher
-        provideAdapter(
-            factory=publisher,
-            adapts=(None, ICollectiveBehaviorSQLLayer),
-            provides=IBrowserView,
-            name='data-'+name)
+        if not view:
+			publisher = SQLItemPublisher
+			provideAdapter(
+				factory=publisher,
+				adapts=(None, ICollectiveBehaviorSQLLayer),
+				provides=IBrowserView,
+				name='data-'+name)
 
-        LOG.info('Publisher registered for data-'+name)
+			LOG.info('Publisher registered for data-'+name)
 
 def registerConnectionUtilityForFTI(fti):
     # This registers an utility that will handle connections and sessions for each defined SQL DX types.

@@ -55,7 +55,7 @@ class ISQLTypeSettings(ITypeSettings):
         required=False,
         )
 
-    sql_folder_id = RelationChoice(
+    sql_folder_id = schema.Choice(
         title=_(u'label_sql_folder_id', default=u'Folder for SQL items'),
         description=_(u"help_sql_folder_id", default=u"Choose a folder where the sql items will be located. If empty, a virtual folder named 'data-'+ type.id will be registered."),
         required=False,

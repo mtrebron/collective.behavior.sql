@@ -15,5 +15,6 @@
  
  <column value="sql_id"/>
  <column value="sql_table"/>
+ <column value="sql_virtual"/>
 
 </object>
