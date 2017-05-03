@@ -15,6 +15,7 @@
   <include file="monkeypatch.zcml"/>
   <include package=".browser" />
   <include package=".behavior" />
+  <include package=".upgrades"/>
 
   <subscriber
       for="Products.CMFCore.interfaces.ISiteRoot
