@@ -1,3 +1,7 @@
+- v 0.9.16 Fix empty rich text
+
+- v 0.9.15 fix the content of richtext if there is no content (replaced '' by '<p></p>')
+
 - v 0.9.14 FIX tabs instead of spaces
 
 - v 0.9.13 Fix getPhysicalPath for sql DX items with container stored as UID and not path

@@ -415,7 +415,7 @@ class SQLDexterityItem(Item):
                         field = iface[name]
                         if IRichText.providedBy(field):
                             if not value:
-                                return '<p></p>'
+                                value = ''
                             if not '<p' in value or not '<br' in value:
                                 value = '<p>'+'</p><p>'.join([a for a in value.split('\n') if a.strip()])+'</p>'
 #                            try:
