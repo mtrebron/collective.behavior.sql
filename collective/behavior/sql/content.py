@@ -534,7 +534,7 @@ class SQLDexterityItem(Item):
             folder = portal.restrictedTraverse(fti.sql_folder_id)
             if folder:
                 parent_path = folder.getPhysicalPath()
-		else:
+        else:
 			try:
 				folder = uuidToObject(sql_folder_id)
 				parent_path = folder.getPhysicalPath()
