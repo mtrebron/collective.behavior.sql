@@ -415,7 +415,7 @@ class SQLDexterityItem(Item):
                         field = iface[name]
                         if IRichText.providedBy(field):
                             if not value:
-                                return ''
+                                return '<p></p>'
                             if not '<p' in value or not '<br' in value:
                                 value = '<p>'+'</p><p>'.join([a for a in value.split('\n') if a.strip()])+'</p>'
 #                            try:
@@ -531,7 +531,7 @@ class SQLDexterityItem(Item):
                 parent_path = folder.getPhysicalPath()
         elif hasattr(sql_folder_id, 'startswith') and sql_folder_id.startswith('/'):
             portal = getToolByName(getSite(), 'portal_url').getPortalObject()
-            folder = portal.restrictedTraverse(fti.sql_folder_id)
+            folder = portal.restrictedTraverse(sql_folder_id)
             if folder:
                 parent_path = folder.getPhysicalPath()
         else:
