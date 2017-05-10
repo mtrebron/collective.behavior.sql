@@ -524,15 +524,22 @@ class SQLDexterityItem(Item):
         fti = ISQLTypeSettings(getUtility(IDexterityFTI, name=self.portal_type))
         folder = None
         parent_path = None
-        if IRelationValue.providedBy(getattr(fti, 'sql_folder_id', None)):
-            folder = fti.sql_folder_id.to_object
+        sql_folder_id = getattr(fti, 'sql_folder_id', None)
+        if IRelationValue.providedBy(sql_folder_id):
+            folder = sql_folder_id.to_object
             if folder:
                 parent_path = folder.getPhysicalPath()
-        elif getattr(fti, 'sql_folder_id', '') and getattr(fti, 'sql_folder_id', '').startswith('/'):
+        elif hasattr(sql_folder_id, 'startswith') and sql_folder_id.startswith('/'):
             portal = getToolByName(getSite(), 'portal_url').getPortalObject()
             folder = portal.restrictedTraverse(fti.sql_folder_id)
             if folder:
                 parent_path = folder.getPhysicalPath()
+		else:
+			try:
+				folder = uuidToObject(sql_folder_id)
+				parent_path = folder.getPhysicalPath()
+			except:
+				pass
         if not parent_path:
             parent_path = ('', getSite().id, 'data-'+self.portal_type,)
         return parent_path+(str(self.id),)
