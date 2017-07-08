@@ -23,5 +23,5 @@ class SQLTraverserOrdering(DefaultOrdering):
             return super(SQLTraverserOrdering, self).idsInOrder()
         results = catalog.searchResults(portal_type=sql_type, sql_virtual=True)
         
-        result = list(self._order())+[a.getId for a in results if a and a.getId]
-        return result
+        ordered_results = list(self._order())+[a.getId for a in results if a and a.getId]
+        return ordered_results
