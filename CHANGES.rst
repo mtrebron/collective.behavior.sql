@@ -1,3 +1,9 @@
+Changelog
+0.9.17 (unreleased)
+
+    variable naming [mtrebron]
+
+
 - v 0.9.16 Fix empty rich text
 
 - v 0.9.15 fix the content of richtext if there is no content (replaced '' by '<p></p>')
