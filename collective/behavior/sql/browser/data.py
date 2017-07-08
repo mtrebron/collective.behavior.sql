@@ -117,15 +117,15 @@ class SQLItemListingForm(crud.CrudForm):
 
     @property
     def view_schema(self):
-        additionnal = list(getAdditionalSchemata(portal_type=self.fti_id))
+        additional = list(getAdditionalSchemata(portal_type=self.fti_id))
         fields = field.Fields(self.sqlschema)
-        additionnal_fields = field.Fields(*additionnal)
+        additional_fields = field.Fields(*additional)
         view_fields = []
-        if 'title' in additionnal_fields:
+        if 'title' in additional_fields:
             view_fields.append('title')
-        additionnal_fields = additionnal_fields.select(*view_fields)
-        additionnal_fields += fields
-        return additionnal_fields
+        additional_fields = additional_fields.select(*view_fields)
+        additional_fields += fields
+        return additional_fields
 
     @property
     def update_schema(self):
@@ -197,8 +197,8 @@ class SQLTypeDataListingForm(SQLItemListingForm):
 
     @property
     def view_schema(self):
-        additionnal = list(getAdditionalSchemata(portal_type=self.fti_id))
-        fields = field.Fields(*additionnal)
+        additional = list(getAdditionalSchemata(portal_type=self.fti_id))
+        fields = field.Fields(*additional)
         fields = fields.select('sql_id')
         return fields
 #        view_fields = []
@@ -210,15 +210,15 @@ class SQLTypeDataListingForm(SQLItemListingForm):
 
     @property
     def update_schema(self):
-        additionnal = list(getAdditionalSchemata(portal_type=self.fti_id))
+        additional = list(getAdditionalSchemata(portal_type=self.fti_id))
         fields = field.Fields(self.sqlschema)
-        additionnal_fields = field.Fields(*additionnal)
+        additional_fields = field.Fields(*additional)
         update_fields = []
-        for field_name in additionnal_fields:
+        for field_name in additional_fields:
             if field_name in self.fieldnames.keys():
                 update_fields.append(field_name)
-        additionnal_fields = additionnal_fields.select(*update_fields)
-        fields += additionnal_fields
+        additional_fields = additional_fields.select(*update_fields)
+        fields += additional_fields
         return fields
 
 
@@ -238,4 +238,4 @@ class SQLItemPublisherListingPage(FormWrapper):
     @property
     def label(self):
         return self.context.Title
-
+    
